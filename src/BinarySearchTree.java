@@ -3,9 +3,8 @@ import java.lang.Math;
 /**
  * A Binary Search Tree implementation.
  * The data type E must implement the Comparable interface.
- * @author Behrooz Mansouri
- * @author Abby Pitcairn
- * @version November 3, 2025
+ * @author Chris A, Chris B - modified from Abby Pitcairn and Behrooz Mansouri
+ * @version November 4, 2025
  */
 public class BinarySearchTree<E extends Comparable<E>> {
 
@@ -143,102 +142,99 @@ public class BinarySearchTree<E extends Comparable<E>> {
         // 3. Visit right subtree
         printInOrder(node.right);
     }
-
     /**
-     * Method 1: Sum of Depths of all nodes in the tree.
-     * @return The sum of depths of all nodes.
+     * Public method to return summation of depths of all nodes in tree
+     * @return int value for sum of depths of tree's nodes
      */
     public int sumDepths() {
-        return sumDepths(root, 0);
+        return sumDepths(root, 1);
     }
-
     /**
-     * Helper method for sumDepths.
-     * @param node the current node
-     * @param depth the depth of the current node
-     * @return The sum of depths of all nodes in the subtree rooted at node.
+     * Private method to return summation of depths of current subtree
+     * @param node The node of the current subtree
+     * @param currentDepth The depth of the current node
+     * @return The summation of depths of the current subtree
      */
-    private int sumDepths(Node<E> node, int depth) {
-        if (node == null) {
-            return -1; // Base case: empty subtree.
+    private int sumDepths(Node<E> node, int currentDepth){
+        if(node == null){
+            return 0;
         }
-        else {
-            return depth + sumDepths(node.left, depth + 1) + sumDepths(node.right, depth + 1);
-        }
+        return currentDepth + sumDepths(node.left, currentDepth + 1) + sumDepths(node.right, currentDepth + 1);
     }
     
     /**
-     * Method 2: Finds 2L Nodes (nodes two levels deeper on the left side) and prints their values.
+     * Public method to print all node data in nodes that are skewed 2L
      */
     public void findAndPrint2LNodes() {
         findAndPrint2LNodes(root);
+        System.out.println();
     }
     /**
-     * Helper method for findAndPrint2LNodes.
-     * @param node the current node
+     * Private method to print nodes that are skewed 2L
+     * @param node Node currently being examined
      */
-    private void findAndPrint2LNodes(Node<E> node) {
-        if (node == null) {
+    private void findAndPrint2LNodes(Node<E> node){
+        if(node == null){
             return;
         }
-        int balance = getBalance(node);
-        if (balance == 2)
+        if(getBalance(node) == 2){
             System.out.print(node.data + " ");
+        }
         findAndPrint2LNodes(node.left);
         findAndPrint2LNodes(node.right);
     }
-    
     /**
-     * Method 3: Validates the binary search tree properties.
-     * @return true if current structure satisfies BST definition, false otherwise.
+     * Public method for checking if tree is a valid BST
+     * @return True/False for BST validity
      */
     public boolean isBST() {
+        //assuming empty tree is valid BST 
         return isBST(root, null, null);
     }
     /**
-     * Helper method for isBST.
-     * @param node current node
-     * @param min
-     * @param max 
-     * @return true if subtree rooted at node is a BST, false otherwise.
+     * Private method for checking if current node's subtree is valid BST
+     * @param node Node currently being examined
+     * @param min Minimum to compare to node.data
+     * @param max Maximum to compare to node.data
+     * @return True/False if tree is valid BST
      */
-    private boolean isBST(Node<E> node, E min, E max) {
-        if (node == null) {
+    private boolean isBST(Node<E> node, E min, E max){
+        if(node == null){
             return true;
         }
-        if (max != null && node.data.compareTo(max) >= 0) {
+        if(max != null && node.data.compareTo(max) >= 0){
             return false;
         }
-        if (min != null && node.data.compareTo(min) <= 0) {
+        if(min != null && node.data.compareTo(min) <= 0){
             return false;
         }
         return isBST(node.left, min, node.data) && isBST(node.right, node.data, max);
     }
-
     /**
-     * Method 4: Checks if the tree is an AVL tree.
-     * @return true if the tree is AVL, false otherwise.
+     * Public method for checking if tree is valid AVL tree
+     * @return True if valid AVL tree, otherwise false
      */
     public boolean isAVL() {
+        if(isBST() == false)
+            return false;
+        //tree is valid BST, check for correct balance
         return isAVL(root);
     }
-
     /**
-     * Helper method for isAVL.
-     * @param node current node
-     * @return true if subtree rooted at node is AVL, false otherwise.
+     * Private method for checking if node's subtree is valid AVL tree
+     * @param node Current node being examined
+     * @return True if node's subtree is valid AVL, otherwise false
      */
-    private boolean isAVL(Node<E> node) {
-        if (node == null) {
+    private boolean isAVL(Node<E> node){
+        if(node == null)
             return true;
-        }
-        int balance = getBalance(node);
-        if (balance < -1 || balance > 1) {
+        int currBalance = getBalance(node);
+        if(currBalance > 1 || currBalance < -1)
             return false;
-        }
         return isAVL(node.left) && isAVL(node.right);
     }
-
+    
+    
     // Main Method for Testing
     public static void main(String[] args) {
         BinarySearchTree<Integer> bst = new BinarySearchTree<>();
@@ -252,7 +248,6 @@ public class BinarySearchTree<E extends Comparable<E>> {
         bst.add(60);
         bst.add(80);
         bst.add(10);
-        bst.add(5);
 
         // Print in order
         bst.printInOrder(); // Expected: 20 30 40 50 60 70 80 
@@ -262,14 +257,20 @@ public class BinarySearchTree<E extends Comparable<E>> {
         System.out.println("Height of 30: " + bst.height(bst.root.left)); // Expected: 2
         System.out.println("Height of 80: " + bst.height(bst.root.right.right)); // Expected: 1
 
-        // Test sumDepths
-        System.out.println("Sum of Depths: " + bst.sumDepths()); // Expected: 12
-        // Test isBST
-        System.out.println("Is BST: " + bst.isBST()); // Expected: true
-        // Test isAVL
-        System.out.println("Is AVL: " + bst.isAVL()); // Expected: false
-        // Test findAndPrint2LNodes
+        // Test depth summation
+        System.out.println("Depth summation: " + bst.sumDepths());
+
+        // Test 2L finding
         System.out.print("2L Nodes: ");
         bst.findAndPrint2LNodes();
+
+        // Test BST validation
+        System.out.println("Valid BST: " + bst.isBST());
+
+        // Test AVL validation
+        System.out.println("Valid AVL (tree is currently balanced): " + bst.isAVL());
+        System.out.println("Adding to tree to skew it leftward");
+        bst.add(5);
+        System.out.println("Valid AVL (tree should be less balanced): " + bst.isAVL());
     }
 }
